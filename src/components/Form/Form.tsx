@@ -1,12 +1,14 @@
 import { useField, useForm } from 'react-final-form-hooks';
+import parser from '../../parser/parser';
 import './Form.scss';
 import ParsingFormData from './Types';
 import validate from './validate';
 
 const Form = (): JSX.Element => {
   const handleFormSubmit = (values: ParsingFormData) => {
-    console.log(values);
+    // console.log(values);
     //не забываем про TRIM
+    parser(values);
   };
 
   const { form, handleSubmit } = useForm({
