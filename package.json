@@ -42,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "react-final-form-hooks": "^2.0.2"
   }
 }
