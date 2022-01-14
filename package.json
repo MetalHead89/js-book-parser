@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "nodemon": "^2.0.15",
     "normalize.css": "^8.0.1",
     "react-final-form-hooks": "^2.0.2"
   }

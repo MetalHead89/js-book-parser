@@ -5,7 +5,8 @@
   "description": "express server for puppeteer",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "server": "nodemon src/index.js"
   },
   "author": "Vitalij Bakalov",
   "license": "ISC",
