@@ -1,12 +1,15 @@
 import express from 'express';
 import config from './config.js';
+import parse from './routes/parse.js';
 
 const PORT = config.port || 5000;
 const server = express();
 
-server.get('/start-parsing', (req, res) => {
-  console.log('parsing started');
-});
+server.use('/book', parse)
+
+// server.get('/start-parsing', (req, res) => {
+//   console.log('parsing started');
+// });
 
 const startServer = () => {
   try {
