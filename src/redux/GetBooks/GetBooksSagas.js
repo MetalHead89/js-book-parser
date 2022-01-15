@@ -1,10 +1,12 @@
 import { put, call, takeEvery } from '@redux-saga/core/effects';
+import { GET_BOOKS } from './Types';
 
 async function getBook(book) {
   // Запрос на сервер с адресом книги
 }
 
 function* getBooks(action) {
+  console.log(action);
   try {
     const books = action.payload.split('\n');
 
@@ -17,7 +19,7 @@ function* getBooks(action) {
 }
 
 function* WatchGetBooks() {
-  yield takeEvery('GET_BOOKS', getBooks);
+  yield takeEvery(GET_BOOKS, getBooks);
 }
 
 export default WatchGetBooks;

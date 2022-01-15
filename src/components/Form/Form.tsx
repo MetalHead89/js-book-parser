@@ -1,14 +1,15 @@
 import { useField, useForm } from 'react-final-form-hooks';
-import parser from '../../parser/parser';
+import { useDispatch } from 'react-redux';
+import { GET_BOOKS } from '../../redux/GetBooks/Types';
 import './Form.scss';
 import ParsingFormData from './Types';
 import validate from './validate';
 
 const Form = (): JSX.Element => {
+  const dispatch = useDispatch();
+
   const handleFormSubmit = (values: ParsingFormData) => {
-    // console.log(values);
-    //не забываем про TRIM
-    parser(values);
+    dispatch({ type: GET_BOOKS, payload: values.addresses });
   };
 
   const { form, handleSubmit } = useForm({
