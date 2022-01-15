@@ -1,7 +1,10 @@
-import { all, call, spawn } from '@redux-saga/core/effects';
+import { all, call, spawn, CallEffect } from '@redux-saga/core/effects';
+import { Saga } from '@redux-saga/types';
 import WatchGetBooks from './GetBooks/GetBooksSagas';
 
-function* startSaga(saga) {
+function* startSaga(
+  saga: Saga<any>
+): Generator<CallEffect<unknown>, void, unknown> {
   while (true) {
     try {
       yield call(saga);
@@ -12,7 +15,7 @@ function* startSaga(saga) {
   }
 }
 
-function* RootSaga() {
+function* RootSaga(): Generator<any, any, any> {
   const sagas = [WatchGetBooks];
 
   const retrySagas = yield sagas.map((saga) => spawn(startSaga, saga));

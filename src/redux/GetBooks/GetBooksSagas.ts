@@ -1,11 +1,12 @@
 import { put, call, takeEvery } from '@redux-saga/core/effects';
+import { AnyAction } from 'redux';
 import { GET_BOOKS } from './Types';
 
-async function getBook(book) {
+async function getBook(book: string) {
   // Запрос на сервер с адресом книги
 }
 
-function* getBooks(action) {
+function* getBooks(action: AnyAction) {
   console.log(action);
   try {
     const books = action.payload.split('\n');
