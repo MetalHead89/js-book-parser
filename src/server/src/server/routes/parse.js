@@ -4,6 +4,7 @@ const parse = Router();
 
 parse.post('/parse', async (req, res) => {
   console.log(req.body)
+  res.status(201).json({message: 'Парсинг книги завершен успешно'})
   // try {
   //   const { uri } = req.body;
 

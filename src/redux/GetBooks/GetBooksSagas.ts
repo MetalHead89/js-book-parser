@@ -17,12 +17,9 @@ async function getBook(book: string) {
 }
 
 function* getBooks(action: AnyAction) {
-  console.log(action);
-  
   try {
     const books = action.payload.split('\n');
-
-    for (const book in books) {
+    for (const book of books) {
       yield call(getBook, book.trim());
     }
   } catch (e) {
