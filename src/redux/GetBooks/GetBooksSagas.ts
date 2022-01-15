@@ -1,13 +1,24 @@
 import { put, call, takeEvery } from '@redux-saga/core/effects';
+import axios from 'axios';
 import { AnyAction } from 'redux';
 import { GET_BOOKS } from './Types';
+import config from '../../server/src/server/config.js';
+
+const SERVER_PORT = config.port;
 
 async function getBook(book: string) {
-  // Запрос на сервер с адресом книги
+  const response = await axios({
+    url: `http://localhost:${SERVER_PORT}/book/parse`,
+    method: 'post',
+    data: {
+      url: book,
+    },
+  });
 }
 
 function* getBooks(action: AnyAction) {
   console.log(action);
+  
   try {
     const books = action.payload.split('\n');
 
@@ -15,7 +26,7 @@ function* getBooks(action: AnyAction) {
       yield call(getBook, book.trim());
     }
   } catch (e) {
-    console.log('Ошибка преобразования списка книг');
+    console.log(e);
   }
 }
 
