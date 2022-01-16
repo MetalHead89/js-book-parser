@@ -2,11 +2,13 @@ import express from 'express';
 import config from './config.js';
 import parse from './routes/parse.js';
 import cors from 'cors';
+import { runParser } from '../parser/parser.js';
 
 const PORT = config.port;
 const server = express();
+runParser();
 
-server.use(express.json())
+server.use(express.json());
 server.use(cors({ origin: 'http://localhost:3000' }));
 server.use('/book', parse);
 
