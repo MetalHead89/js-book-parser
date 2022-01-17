@@ -2,6 +2,7 @@
 
 # dependencies
 /src/server/node_modules
+/src/server/parser/config.js
 /vscode
 /node_modules
 /.pnp
