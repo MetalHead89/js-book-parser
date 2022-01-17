@@ -20,7 +20,7 @@ async function runParser() {
 }
 
 async function logIn() {
-  await page.goto(config.siteURL);
+  await page.goto(config.siteURL, { waitUntil: 'networkidle2' });
   await page.waitFor(5000);
 
   const modalWindow = await page.$x('//*[@id="ajax-form-clean"]');
@@ -39,46 +39,16 @@ async function logIn() {
   const [entryButton] = await page.$x('/html/body/div[5]/div/div/div[2]/a[1]');
   await entryButton.evaluate((button) => button.click());
 
-  page.waitForSelector('#email')
-  const email = await page.$('#email');
-  // email.click();
-  // console.dir(email);
-  // await page.$eval('#email', (el) => (el.value = '548654'));
+  await page.evaluate((email, password) => {
+    const emailInput = document.querySelectorAll('#email');
+    emailInput[1].value = email;
 
-  // await page.click(
-  //   '#login-form > div > div.content-center-form__submit > button'
-  // );
+    const passwordInput = document.querySelector('#password');
+    passwordInput.value = password;
 
-
-  // page.waitForSelector('#email').then(() => page.focus('#email'));
-
-  // // await page.waitForSelector('#email', { visible: true });
-  // await page.focus('#email');
-
-  // await page.waitForXPath('//*[@id="email"]', { visible: true });
-  // const [email] = await page.$x('//*[@id="email"]');
-  // if (email) {
-  //   console.log(email)
-  //   await email.evaluate((email) => email.click());
-  // }
-  // await page.focus('//*[@id="email"]');
-  // await page.keyboard.type('test54');
-
-  // const [email] = await page.$x('//*[@id="password"]');
-  // await email.evaluate((email) => email.click());
-  // await email.type('Blah');
-
-  // await page.focus('#email');
-  // await page.keyboard.type('test54');
-  // await page.evaluate(() => {
-  //   const email = document.querySelector('#email');
-  //   email.value = 'test@example.com';
-  // });
-
-  // await page.$eval(
-  //   '#email',
-  //   (el) => (el.value = '548654')
-  // );
+    const submitButton = document.querySelector('#login-form > div > div.content-center-form__submit > button');
+    submitButton.click();
+  }, config.email, config.password);
 }
 
 export { runParser };
