@@ -55,11 +55,27 @@ async function closeModalWindow() {
     });
   }
 
-  // if (page.url() === 'https://urait.ru/') {
-  //   await page.goto(
-  //     'https://urait.ru/book/informacionnye-tehnologii-v-marketinge-489042',
-  //     { waitUntil: 'networkidle2' }
-  //   );
+  if (page.url() === 'https://urait.ru/') {
+    await saveBook(
+      'https://urait.ru/viewer/informacionnye-tehnologii-v-marketinge-489042'
+    );
+  }
+}
+
+async function saveBook(url) {
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)')
+  // const pagesCount = await page.$eval(
+  //   '#viewer__bar__pages-scale > span:nth-child(3)',
+  //   (elem) => parseInt(elem.innerHTML.substring(2), 10)
+  // );
+
+  // for await (let pageNumber of [...Array(pagesCount).keys()]) {
+  //   // await page.evaluate((pageNumber) => {
+  //   //   console.log(pageNumber);
+  //   //   // const currentPage = document.getElementById(`#page_${pageNumber}`);
+  //   //   // currentPage.ScrollIntoView();
+  //   // });
   // }
 }
 
