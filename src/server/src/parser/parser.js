@@ -1,3 +1,4 @@
+import { jsPDF } from 'jspdf';
 import puppeteer from 'puppeteer';
 import config from './config.js';
 
@@ -72,14 +73,50 @@ async function saveBook(url) {
     (elem) => parseInt(elem.innerHTML.substring(2), 10)
   );
 
+  // const selector = '#page_1';
+  // await page.waitForSelector(selector);
+  // await page.evaluate((selector) => {
+  //   const el = document.querySelector(selector);
+  //   el.scrollIntoView();
+  // }, selector);
+
+  // await page.waitFor(10000);
+
+  // const dom = await page.$eval('#page_1', (element) => {
+  //   return element.innerHTML;
+  // });
+
+  // await page.setContent(dom);
+  const pdfDocument = new jsPDF();
+  pdfDocument.addPage();
+
   for await (let pageNumber of [...Array(pagesCount).keys()]) {
     const selector = `#page_${pageNumber + 1}`;
     await page.waitForSelector(selector);
-    await page.evaluate((selector) => {
-      const el = document.querySelector(selector);
-      el.scrollIntoView();
-    }, selector);
+    await page.evaluate(
+      (selector, pdfDocument) => {
+        const el = document.querySelector(selector);
+        el.scrollIntoView();
+
+        // const image = el.toDataURL('image/png', 1.0);
+        // pdfDocument.addPage();
+        // pdfDocument.modules.addImage(image, 'PNG', 10, 10);
+
+        // const image = el
+        //   .toDataURL('image/jpeg', 1.0)
+        //   .replace('image/png', 'image/octet-stream');
+        // window.location.href = image;
+      },
+      selector,
+      pdfDocument
+    );
   }
+
+  pdfDocument.save('output.pdf');
+
+  // await page.pdf({ path: 'test.pdf', format: 'A4', printBackground: true });
+  console.log('Завершено');
+  await browser.close();
 }
 
 export { runParser };
