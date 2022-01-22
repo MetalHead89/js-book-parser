@@ -1,6 +1,8 @@
 import { jsPDF } from 'jspdf';
+import { PDFDocument } from 'pdf-lib';
 import puppeteer from 'puppeteer';
 import config from './config.js';
+import * as fs from 'fs';
 
 let browser = null;
 let page = null;
@@ -14,6 +16,7 @@ async function runParser() {
 
     page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
+
     await logIn();
     await closeModalWindow();
   } catch (e) {
@@ -59,7 +62,7 @@ async function closeModalWindow() {
 
   if (page.url() === 'https://urait.ru/') {
     await saveBook(
-      'https://urait.ru/viewer/informacionnye-tehnologii-v-marketinge-489042'
+      'https://urait.ru/viewer/vysshaya-matematika-dlya-gumanitarnyh-napravleniy-489374'
     );
   }
 }
@@ -73,50 +76,271 @@ async function saveBook(url) {
     (elem) => parseInt(elem.innerHTML.substring(2), 10)
   );
 
-  // const selector = '#page_1';
-  // await page.waitForSelector(selector);
-  // await page.evaluate((selector) => {
-  //   const el = document.querySelector(selector);
-  //   el.scrollIntoView();
-  // }, selector);
+  await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+  await page.evaluate(() => {
+    const zoomIn = document.querySelector(
+      '#viewer__wrapper__buttons > div:nth-child(1)'
+    );
+    zoomIn.click();
+    zoomIn.click();
+    zoomIn.click();
+    zoomIn.click();
+  });
 
-  // await page.waitFor(10000);
+  // const pdfDocument = await PDFDocument.create();
 
-  // const dom = await page.$eval('#page_1', (element) => {
-  //   return element.innerHTML;
-  // });
+  for (let pageNumber of [...Array(pagesCount).keys()]) {
+    // const pdfPage = pdfDocument.addPage();
+    // const { width, height } = pdfPage.getSize();
 
-  // await page.setContent(dom);
-  const pdfDocument = new jsPDF();
-  pdfDocument.addPage();
-
-  for await (let pageNumber of [...Array(pagesCount).keys()]) {
     const selector = `#page_${pageNumber + 1}`;
     await page.waitForSelector(selector);
-    await page.evaluate(
-      (selector, pdfDocument) => {
-        const el = document.querySelector(selector);
-        el.scrollIntoView();
 
-        // const image = el.toDataURL('image/png', 1.0);
-        // pdfDocument.addPage();
-        // pdfDocument.modules.addImage(image, 'PNG', 10, 10);
+    await page.evaluate((selector) => {
+      const el = document.querySelector(selector);
+      el.scrollIntoView();
+    }, selector);
 
-        // const image = el
-        //   .toDataURL('image/jpeg', 1.0)
-        //   .replace('image/png', 'image/octet-stream');
-        // window.location.href = image;
-      },
-      selector,
-      pdfDocument
-    );
+    // pdfPage.drawImage(pngImage, {
+    //   width: width,
+    //   height: height,
+    // });
   }
 
-  pdfDocument.save('output.pdf');
+  // const pdfBytes = await pdfDocument.save();
+  // fs.writeFile('output.pdf', pdfBytes, function (error) {
+  //   if (error) throw error;
+  //   console.log('Данные успешно записаны записать файл');
+  // });
+  // pdfDocument.save('output.pdf');
 
-  // await page.pdf({ path: 'test.pdf', format: 'A4', printBackground: true });
   console.log('Завершено');
   await browser.close();
 }
+
+// async function saveBook(url) {
+//   await page.goto(`${url}#page/1`);
+
+//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+//   const pagesCount = await page.$eval(
+//     '#viewer__bar__pages-scale > span:nth-child(3)',
+//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
+//   );
+
+//   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+//   await page.evaluate(() => {
+//     const zoomIn = document.querySelector(
+//       '#viewer__wrapper__buttons > div:nth-child(1)'
+//     );
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//   });
+
+//   const pdfDocument = await PDFDocument.create();
+//   // const documentWidth = pdfDocument.internal.pageSize.getWidth();
+//   // const documentHeight = pdfDocument.internal.pageSize.getHeight();
+
+//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//     // console.log(pageNumber + 1);
+
+//     // if (pageNumber !== 0) {
+//     //   pdfDocument.addPage();
+//     // }
+//     const pdfPage = pdfDocument.addPage();
+//     const { width, height } = pdfPage.getSize();
+
+//     const selector = `#page_${pageNumber + 1}`;
+//     await page.waitForSelector(selector);
+
+//     const image = await page.evaluate((selector) => {
+//       const el = document.querySelector(selector);
+//       el.scrollIntoView();
+
+//       return el.toDataURL('image/png', 1.0);
+//     }, selector);
+
+//     const pngImage = await pdfDocument.embedPng(image);
+
+//     pdfPage.drawImage(pngImage, {
+//       width: width,
+//       height: height,
+//     });
+
+//     // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+//   }
+
+//   const pdfBytes = await pdfDocument.save();
+//   fs.writeFile('output.pdf', pdfBytes, function (error) {
+//     if (error) throw error;
+//     console.log('Данные успешно записаны записать файл');
+//   });
+//   // pdfDocument.save('output.pdf');
+
+//   console.log('Завершено');
+//   await browser.close();
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// async function saveBook(url) {
+//   await page.goto(`${url}#page/1`);
+
+//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+//   const pagesCount = await page.$eval(
+//     '#viewer__bar__pages-scale > span:nth-child(3)',
+//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
+//   );
+
+//   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+//   await page.evaluate(() => {
+//     const zoomIn = document.querySelector(
+//       '#viewer__wrapper__buttons > div:nth-child(1)'
+//     );
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//   });
+
+//   let pages = [];
+
+//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//     const pdfDocument = new jsPDF();
+//     const documentWidth = pdfDocument.internal.pageSize.getWidth();
+//     const documentHeight = pdfDocument.internal.pageSize.getHeight();
+
+//     const selector = `#page_${pageNumber + 1}`;
+//     await page.waitForSelector(selector);
+
+//     const image = await page.evaluate((selector) => {
+//       const el = document.querySelector(selector);
+//       el.scrollIntoView();
+
+//       return el.toDataURL('image/png', 1.0);
+//     }, selector);
+
+//     pdfDocument.addImage(image, 'PNG', 10, 10, documentWidth, documentHeight);
+//     pdfDocument.save(`${pageNumber + 1}.pdf`);
+//     pages.push(`${pageNumber + 1}.pdf`);
+//   }
+
+//   console.log('Завершено');
+//   await browser.close();
+// }
+
+// async function saveBook(url) {
+//   await page.goto(`${url}#page/1`);
+
+//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+//   const pagesCount = await page.$eval(
+//     '#viewer__bar__pages-scale > span:nth-child(3)',
+//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
+//   );
+
+//   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+//   await page.evaluate(() => {
+//     const zoomIn = document.querySelector(
+//       '#viewer__wrapper__buttons > div:nth-child(1)'
+//     );
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//   });
+
+//   // const pdfDocument = new jsPDF();
+//   // const documentWidth = pdfDocument.internal.pageSize.getWidth();
+//   // const documentHeight = pdfDocument.internal.pageSize.getHeight();
+
+//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//     console.log(pageNumber + 1);
+//     // if (pageNumber !== 0) {
+//     //   pdfDocument.addPage();
+//     // }
+//     const selector = `#page_${pageNumber + 1}`;
+//     await page.waitForSelector(selector);
+
+//     const canvas = await page.evaluate((selector) => {
+//       const el = document.querySelector(selector);
+//       el.scrollIntoView();
+
+//       // return el.toDataURL('image/png', 1.0);
+//     }, selector);
+
+//     html2canvas(canvas).then((canvas => {
+//       const image = canvas.toDataURL('image/png', 1.0)
+//       const pdfDocument = new jsPDF();
+//       pdfDocument.addImage(image, 'PNG', 10, 10);
+//       pdfDocument.save('output.pdf');
+//     })).catch((e) => e)
+
+//     // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+//   }
+
+//   // pdfDocument.save('output.pdf');
+
+//   console.log('Завершено');
+//   await browser.close();
+// }
+
+// async function saveBook(url) {
+//   await page.goto(`${url}#page/1`);
+
+//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+//   const pagesCount = await page.$eval(
+//     '#viewer__bar__pages-scale > span:nth-child(3)',
+//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
+//   );
+
+//   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+//   await page.evaluate(() => {
+//     const zoomIn = document.querySelector(
+//       '#viewer__wrapper__buttons > div:nth-child(1)'
+//     );
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//   });
+
+//   const pdfDocument = new jsPDF();
+//   const documentWidth = pdfDocument.internal.pageSize.getWidth();
+//   const documentHeight = pdfDocument.internal.pageSize.getHeight();
+
+//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//     console.log(pageNumber + 1);
+//     if (pageNumber !== 0) {
+//       pdfDocument.addPage();
+//     }
+//     const selector = `#page_${pageNumber + 1}`;
+//     await page.waitForSelector(selector);
+
+//     const image = await page.evaluate((selector) => {
+//       const el = document.querySelector(selector);
+//       el.scrollIntoView();
+
+//       return el.toDataURL('image/svg', 1.0);
+//     }, selector);
+
+//     pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+//   }
+
+//   pdfDocument.save('output.pdf');
+
+//   console.log('Завершено');
+//   await browser.close();
+// }
 
 export { runParser };
