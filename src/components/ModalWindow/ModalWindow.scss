@@ -1,7 +1,16 @@
 .modalWindow {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: fixed;
   width: 100vw;
   height: 100vh;
   background: white;
   opacity: 80%;
+
+  &__text {
+    padding: 30px;
+    font-size: 20px;
+  }
 }
