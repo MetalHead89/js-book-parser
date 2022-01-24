@@ -19,7 +19,7 @@ class Parser {
   async run() {
     try {
       this._browser = await puppeteer.launch({
-        headless: false, // false: enables one to view the Chrome instance in action
+        headless: true, // false: enables one to view the Chrome instance in action
         defaultViewport: null, // (optional) useful only in non-headless mode
       });
 
@@ -86,7 +86,7 @@ class Parser {
     const pdfBytes = await pdfDocument.save();
   fs.writeFile(`${bookTitle}.pdf`, pdfBytes, function (error) {
     if (error) throw error;
-    console.log('Данные успешно записаны записать файл');
+    console.log('Данные успешно записаны в файл');
   });
   }
 
