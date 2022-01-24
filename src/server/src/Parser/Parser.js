@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
+import { PDFDocument } from 'pdf-lib';
 import config from './config.js';
+import * as fs from 'fs';
 
 class Parser {
   _browser = null;
@@ -29,6 +31,63 @@ class Parser {
       console.log(`Произошла ошибка во время запуска: ${e.message}`);
       await this.browser.close();
     }
+  }
+
+  async saveBook(url) {
+    await this._page.goto(`${url}#page/1`);
+
+    await this._page.waitForSelector('#viewer__header__title');
+    const bookTitle = await this._page.$eval(
+      '#viewer__header__title',
+      (element) => element.innerHTML.substring(0, 15)
+    );
+
+    await this._page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+    const pagesCount = await this._page.$eval(
+      '#viewer__bar__pages-scale > span:nth-child(3)',
+      (element) => parseInt(element.innerHTML.substring(2), 10)
+    );
+
+    await this._page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+    // await page.evaluate(() => {
+    //   const zoomIn = document.querySelector(
+    //     '#viewer__wrapper__buttons > div:nth-child(1)'
+    //   );
+    //   zoomIn.click();
+    //   zoomIn.click();
+    //   zoomIn.click();
+    //   zoomIn.click();
+    // });
+
+    const pdfDocument = await PDFDocument.create();
+
+    for await (let pageNumber of [...Array(pagesCount).keys()]) {
+      const pdfPage = await pdfDocument.addPage();
+      const { width, height } = pdfPage.getSize();
+
+      const selector = `#page_${pageNumber + 1}`;
+      await this._page.waitForSelector(selector);
+
+      const image = await this._page.evaluate((selector) => {
+        const el = document.querySelector(selector);
+        el.scrollIntoView();
+
+        return el.toDataURL('image/png', 1.0);
+      }, selector);
+
+      const pngImage = await pdfDocument.embedPng(image);
+
+      pdfPage.drawImage(pngImage, {
+        width: width,
+        height: height,
+      });
+    }
+
+    const pdfBytes = await pdfDocument.save();
+  fs.writeFile(`${bookTitle}.pdf`, pdfBytes, function (error) {
+    if (error) throw error;
+    console.log('Данные успешно записаны записать файл');
+  });
   }
 
   async _logIn() {

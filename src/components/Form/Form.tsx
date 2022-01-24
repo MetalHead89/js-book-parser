@@ -1,24 +1,19 @@
 import { useField, useForm } from 'react-final-form-hooks';
-import { useDispatch } from 'react-redux';
-import { GET_BOOKS } from '../../redux/GetBooks/Types';
+import { useDispatch, useSelector } from 'react-redux';
+import { SAVE_BOOKS } from '../../redux/Parser/Types';
+import { RootState } from '../../redux/Store';
 import './Form.scss';
 import ParsingFormData from './Types';
 import validate from './validate';
 
 const Form = (): JSX.Element => {
   const dispatch = useDispatch();
-  // const { isParserStarts, isParserReady } = {
-  //   ...useSelector((state: RootState) => state.ParserReducer),
-  // };
-
-  // useEffect(() => {
-  //   if (!isParserStarts && !isParserReady) {
-  //     dispatch({ type: START_PARSER });
-  //   }
-  // });
+  const isButtonDisabled = useSelector(
+    (state: RootState) => state.ParserReducer.isButtonDisabled
+  );
 
   const handleFormSubmit = (values: ParsingFormData) => {
-    dispatch({ type: GET_BOOKS, payload: values.addresses });
+    dispatch({ type: SAVE_BOOKS, payload: values.addresses });
   };
 
   const { form, handleSubmit } = useForm({
@@ -39,8 +34,12 @@ const Form = (): JSX.Element => {
         <span className="form__error">{addresses.meta.error}</span>
       )}
 
-      <button className="form__submit" type="submit">
-        Начать парсинг
+      <button
+        type="submit"
+        disabled={isButtonDisabled}
+        className="form__submit"
+      >
+        Скачать книги
       </button>
     </form>
   );

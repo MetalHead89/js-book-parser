@@ -14,6 +14,7 @@ server.use(express.json());
 server.use(cors({ origin: 'http://localhost:3000' }));
 server.use('/book', parse);
 
+
 server.post('/parser/run', async (req, res) => {
   try {
     await parser.run();
@@ -22,6 +23,21 @@ server.post('/parser/run', async (req, res) => {
   } catch (e) {
     res.status(500).json({
       message: `Произошла ошибка во время запуска парсера: ${e}`,
+    });
+  }
+});
+
+server.post('/parser/save-book', async (req, res) => {
+  // console.log(req.body)
+  // res.status(201).json({message: 'Парсинг книги завершен успешно'})
+  try {
+    const { url } = req.body;
+
+    await parser.saveBook(url);
+    res.status(201).json({message: 'Парсинг книги завершен успешно'})
+  } catch {
+    res.status(500).json({
+      message: 'Что-то пошло не так и сервер не смог обработать данный запрос',
     });
   }
 });
