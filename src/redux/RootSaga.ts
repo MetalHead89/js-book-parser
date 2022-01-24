@@ -1,6 +1,7 @@
 import { all, call, spawn, CallEffect } from '@redux-saga/core/effects';
 import { Saga } from '@redux-saga/types';
 import WatchGetBooks from './GetBooks/GetBooksSagas';
+import WatchRunParser from './Parser/RunParserSaga';
 
 function* startSaga(
   saga: Saga<any>
@@ -16,7 +17,7 @@ function* startSaga(
 }
 
 function* RootSaga(): Generator<any, any, any> {
-  const sagas = [WatchGetBooks];
+  const sagas = [WatchRunParser, WatchGetBooks];
 
   const retrySagas = yield sagas.map((saga) => spawn(startSaga, saga));
 

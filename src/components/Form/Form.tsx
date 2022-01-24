@@ -7,6 +7,15 @@ import validate from './validate';
 
 const Form = (): JSX.Element => {
   const dispatch = useDispatch();
+  // const { isParserStarts, isParserReady } = {
+  //   ...useSelector((state: RootState) => state.ParserReducer),
+  // };
+
+  // useEffect(() => {
+  //   if (!isParserStarts && !isParserReady) {
+  //     dispatch({ type: START_PARSER });
+  //   }
+  // });
 
   const handleFormSubmit = (values: ParsingFormData) => {
     dispatch({ type: GET_BOOKS, payload: values.addresses });
