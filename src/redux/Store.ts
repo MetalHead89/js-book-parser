@@ -3,11 +3,12 @@ import createSagaMiddleware from 'redux-saga';
 import GetBooksSReducer from './GetBooks/GetBooksReducer';
 import RootSaga from './RootSaga';
 import ParserReducer from './Parser/ParserReducer';
+import ModalWindowReducer from './ModalWindow/ModalWindowReducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
-  reducer: { GetBooksSReducer, ParserReducer },
+  reducer: { GetBooksSReducer, ParserReducer, ModalWindowReducer },
   middleware: [...getDefaultMiddleware(), sagaMiddleware],
 });
 

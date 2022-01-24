@@ -39,7 +39,7 @@ class Parser {
     await this._page.waitForSelector('#viewer__header__title');
     const bookTitle = await this._page.$eval(
       '#viewer__header__title',
-      (element) => element.innerHTML.substring(0, 15)
+      (element) => element.innerHTML.trim().substring(0, 15)
     );
 
     await this._page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');

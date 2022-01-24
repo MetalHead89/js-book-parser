@@ -2,14 +2,20 @@ import { useField, useForm } from 'react-final-form-hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { SAVE_BOOKS } from '../../redux/Parser/Types';
 import { RootState } from '../../redux/Store';
+import ModalWindow from '../ModalWindow/ModalWindow';
 import './Form.scss';
 import ParsingFormData from './Types';
 import validate from './validate';
 
 const Form = (): JSX.Element => {
   const dispatch = useDispatch();
+
   const isButtonDisabled = useSelector(
     (state: RootState) => state.ParserReducer.isButtonDisabled
+  );
+
+  const isModalWindowEnabled = useSelector(
+    (state: RootState) => state.ModalWindowReducer.isEnabled
   );
 
   const handleFormSubmit = (values: ParsingFormData) => {
@@ -24,6 +30,7 @@ const Form = (): JSX.Element => {
   const addresses = useField('addresses', form);
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="form">
       <textarea
         {...addresses.input}
@@ -42,6 +49,8 @@ const Form = (): JSX.Element => {
         Скачать книги
       </button>
     </form>
+    {isModalWindowEnabled ? <ModalWindow /> : null}
+    </>
   );
 };
 
