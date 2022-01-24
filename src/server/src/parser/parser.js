@@ -74,71 +74,6 @@ async function closeModalWindow() {
   // }
 }
 
-// async function saveBook(url) {
-//   await page.goto(`${url}#page/1`);
-
-//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
-//   const pagesCount = await page.$eval(
-//     '#viewer__bar__pages-scale > span:nth-child(3)',
-//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
-//   );
-
-//   // await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
-//   // await page.evaluate(() => {
-//   //   const zoomIn = document.querySelector(
-//   //     '#viewer__wrapper__buttons > div:nth-child(1)'
-//   //   );
-//   //   zoomIn.click();
-//   //   zoomIn.click();
-//   //   zoomIn.click();
-//   //   zoomIn.click();
-//   // });
-
-//   const pdfDocument = await PDFDocument.create();
-
-//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
-//     const pdfPage = await pdfDocument.addPage();
-//     const { width, height } = pdfPage.getSize();
-
-//     const selector = `#page_${pageNumber + 1}`;
-//     await page.waitForSelector(selector);
-
-//     let image = await page.evaluate((selector) => {
-//       const el = document.querySelector(selector);
-//       el.scrollIntoView();
-//       return el;
-//       // return el.toDataURL('image/png', 1.0);
-//     }, selector);
-
-//     image = html2canvas(image, {
-//       scale: '2',
-//     })
-//       .then(function (canvas) {
-//         return canvas;
-//       })
-//       .catch((e) => e);
-
-//     const pngImage = await pdfDocument.embedJpg(image);
-
-//     pdfPage.drawImage(pngImage, {
-//       width: width,
-//       height: height,
-//     });
-
-//     // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
-//   }
-
-//   const pdfBytes = await pdfDocument.save();
-//   fs.writeFile('output.pdf', pdfBytes, function (error) {
-//     if (error) throw error;
-//     console.log('Данные успешно записаны записать файл');
-//   });
-//   pdfDocument.save('output.pdf');
-
-//   console.log('Завершено');
-//   await browser.close();
-// }
-
 async function saveBook(url) {
   await page.goto(`${url}#page/1`);
 
@@ -149,88 +84,142 @@ async function saveBook(url) {
   );
 
   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
-  await page.evaluate(() => {
-    const zoomIn = document.querySelector(
-      '#viewer__wrapper__buttons > div:nth-child(1)'
-    );
-    zoomIn.click();
-    zoomIn.click();
-    zoomIn.click();
-    zoomIn.click();
-  });
+  // await page.evaluate(() => {
+  //   const zoomIn = document.querySelector(
+  //     '#viewer__wrapper__buttons > div:nth-child(1)'
+  //   );
+  //   zoomIn.click();
+  //   zoomIn.click();
+  //   zoomIn.click();
+  //   zoomIn.click();
+  // });
 
-  // const pdfDocument = await PDFDocument.create();
+  const pdfDocument = await PDFDocument.create();
 
   for await (let pageNumber of [...Array(pagesCount).keys()]) {
-    // const pdfPage = await pdfDocument.addPage();
-    // const { width, height } = pdfPage.getSize();
+    const pdfPage = await pdfDocument.addPage();
+    const { width, height } = pdfPage.getSize();
 
     const selector = `#page_${pageNumber + 1}`;
+    await page.waitForSelector(selector);
 
-    console.log(selector);
+    const image = await page.evaluate((selector) => {
+      const el = document.querySelector(selector);
+      el.scrollIntoView();
 
-    await scrollToNextPage(selector);
+      return el.toDataURL('image/png', 1.0);
+    }, selector);
 
-    // await new Promise((resolve, reject) => )
-    // const pdfPage = await pdfDocument.addPage();
-    // const { width, height } = pdfPage.getSize();
+    const pngImage = await pdfDocument.embedPng(image);
 
-    // const selector = `#page_${pageNumber + 1}`;
-    // await page.waitForSelector(selector);
-
-    // const image = await page.evaluate(async (selector) => {
-    //   const el = document.querySelector(selector);
-    //   el.scrollIntoView(false);
-
-    //   return el.toDataURL('image/png', 1.0);
-    // }, selector);
-
-    // const pngImage = await pdfDocument.embedPng(image);
-
-    // pdfPage.drawImage(pngImage, {
-    //   width: width,
-    //   height: height,
-    // });
-    // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+    pdfPage.drawImage(pngImage, {
+      width: width,
+      height: height,
+    });
   }
 
-  // await autoScroll();
-
-  // const pdfDocument = await PDFDocument.create();
-
-  // for await (let pageNumber of [...Array(pagesCount).keys()]) {
-  //   const pdfPage = await pdfDocument.addPage();
-  //   const { width, height } = pdfPage.getSize();
-
-  //   const selector = `#page_${pageNumber + 1}`;
-  //   await page.waitForSelector(selector);
-
-  //   const image = await page.evaluate((selector) => {
-  //     const el = document.querySelector(selector);
-  //     el.scrollIntoView(false);
-
-  //     return el.toDataURL('image/png', 1.0);
-  //   }, selector);
-
-  //   const pngImage = await pdfDocument.embedPng(image);
-
-  //   pdfPage.drawImage(pngImage, {
-  //     width: width,
-  //     height: height,
-  //   });
-  //   // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
-  // }
-
-  // const pdfBytes = await pdfDocument.save();
-  // fs.writeFile('output.pdf', pdfBytes, function (error) {
-  //   if (error) throw error;
-  //   console.log('Данные успешно записаны записать файл');
-  // });
-  // pdfDocument.save('output.pdf');
+  const pdfBytes = await pdfDocument.save();
+  fs.writeFile('output.pdf', pdfBytes, function (error) {
+    if (error) throw error;
+    console.log('Данные успешно записаны записать файл');
+  });
 
   console.log('Завершено');
-  // await browser.close();
+  await browser.close();
 }
+
+// async function saveBook(url) {
+//   await page.goto(`${url}#page/1`);
+
+//   await page.waitForSelector('#viewer__bar__pages-scale > span:nth-child(3)');
+//   const pagesCount = await page.$eval(
+//     '#viewer__bar__pages-scale > span:nth-child(3)',
+//     (elem) => parseInt(elem.innerHTML.substring(2), 10)
+//   );
+
+//   await page.waitForSelector('#viewer__wrapper__buttons > div:nth-child(1)');
+//   await page.evaluate(() => {
+//     const zoomIn = document.querySelector(
+//       '#viewer__wrapper__buttons > div:nth-child(1)'
+//     );
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//     zoomIn.click();
+//   });
+
+//   // const pdfDocument = await PDFDocument.create();
+
+//   for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//     // const pdfPage = await pdfDocument.addPage();
+//     // const { width, height } = pdfPage.getSize();
+
+//     const selector = `#page_${pageNumber + 1}`;
+
+//     console.log(selector);
+
+//     await scrollToNextPage(selector);
+
+//     // await new Promise((resolve, reject) => )
+//     // const pdfPage = await pdfDocument.addPage();
+//     // const { width, height } = pdfPage.getSize();
+
+//     // const selector = `#page_${pageNumber + 1}`;
+//     // await page.waitForSelector(selector);
+
+//     // const image = await page.evaluate(async (selector) => {
+//     //   const el = document.querySelector(selector);
+//     //   el.scrollIntoView(false);
+
+//     //   return el.toDataURL('image/png', 1.0);
+//     // }, selector);
+
+//     // const pngImage = await pdfDocument.embedPng(image);
+
+//     // pdfPage.drawImage(pngImage, {
+//     //   width: width,
+//     //   height: height,
+//     // });
+//     // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+//   }
+
+//   // await autoScroll();
+
+//   // const pdfDocument = await PDFDocument.create();
+
+//   // for await (let pageNumber of [...Array(pagesCount).keys()]) {
+//   //   const pdfPage = await pdfDocument.addPage();
+//   //   const { width, height } = pdfPage.getSize();
+
+//   //   const selector = `#page_${pageNumber + 1}`;
+//   //   await page.waitForSelector(selector);
+
+//   //   const image = await page.evaluate((selector) => {
+//   //     const el = document.querySelector(selector);
+//   //     el.scrollIntoView(false);
+
+//   //     return el.toDataURL('image/png', 1.0);
+//   //   }, selector);
+
+//   //   const pngImage = await pdfDocument.embedPng(image);
+
+//   //   pdfPage.drawImage(pngImage, {
+//   //     width: width,
+//   //     height: height,
+//   //   });
+//   //   // pdfDocument.addImage(image, 'SVG', 10, 10, documentWidth, documentHeight);
+//   // }
+
+//   // const pdfBytes = await pdfDocument.save();
+//   // fs.writeFile('output.pdf', pdfBytes, function (error) {
+//   //   if (error) throw error;
+//   //   console.log('Данные успешно записаны записать файл');
+//   // });
+//   // pdfDocument.save('output.pdf');
+
+//   console.log('Завершено');
+//   // await browser.close();
+// }
 
 async function scrollToNextPage(selector) {
   await page.waitForSelector(selector);
